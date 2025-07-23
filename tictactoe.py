@@ -22,7 +22,7 @@ class Board:
         return state
     def winDetection(self, state):
         for i in range(len(state)):
-            if (i<3 and len(unique(state[i::3]))==1 or i%3==0 and len(unique(state[i:i+3]))==1 or i==0 and len(unique(state[i::4]))==1 or i==2 and len(unique(state[i:8:2]))==1) and state[i]!=0:return state[i]
+            if (i<3 and len(unique(state[i:i+7:3]))==1 or i%3==0 and len(unique(state[i:i+3]))==1 or i==0 and len(unique(state[i:i+9:4]))==1 or i==2 and len(unique(state[i:i+5:2]))==1) and state[i]!=0:return state[i]
         return 0
     def eval(self, branch, ownTurn):
         if ownTurn:return branch[(max if branch["turn"]%2==0 else min)([i for i in branch if i not in ["state", "turn", "eval"]], key=lambda n:branch[n]["eval"])]["eval"]
@@ -48,7 +48,7 @@ class Board:
             else:move=__main__.compute(self.state.count(0))
             self.state=self.applyMove(self.state, self.turn, move)
             self.turn+=1
-            if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==9 or self.winDetection(self.state)!=0:self.display()
+            if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==len(self.state) or self.winDetection(self.state)!=0:self.display()
             if self.winDetection(self.state)!=0:
                 if __name__=="__main__":print(f"Player {self.winDetection(self.state)} wins!\n")
                 elif self.winDetection(self.state)==humanPlayer:print("The player wins!\n")
