@@ -12,6 +12,7 @@ def compute(depth):
         for j in range(i):branches=[j[k] for j in branches for k in j if k not in ["state", "turn", "eval"]]
         for j in branches:
             if len(j)>3:j["eval"]=board.eval(j, i%2==0)
+    #print(tree)
     #print(f"\n{tree["eval"]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 humanPlayer=-1
