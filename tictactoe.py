@@ -7,7 +7,7 @@ def unique(l):
 class Board:
     def __init__(self):
         self.state=[0]*9
-        self.turn=9-self.state.count(0)
+        self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
     def enumerateMoves(self, state, turn, reasonable=True):
         if self.winDetection(state)!=0:return {}
