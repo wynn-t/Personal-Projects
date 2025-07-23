@@ -26,7 +26,9 @@ class Board:
         return 0
     def eval(self, branch, ownTurn):
         if ownTurn:return branch[(max if branch["turn"]%2==0 else min)([i for i in branch if i not in ["state", "turn", "eval"]], key=lambda n:branch[n]["eval"])]["eval"]
-        else:return sum([branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]])/(len(branch)-3)
+        else:
+            evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], 1 if branch["turn"]%2==0 else -1
+            return temp if temp in evals else sum(evals)/len(evals)
     def display(self):
         print()
         for i in range(3):
