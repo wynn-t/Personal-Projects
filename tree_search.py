@@ -14,6 +14,7 @@ def compute(depth):
             if len(j)>3:j["eval"]=board.eval(j, i%2==0)
     #print(tree)
     #print(f"\n{tree["eval"]}")
+    #print(f"\n{[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 humanPlayer=-1
 while humanPlayer not in [1, 2]:
