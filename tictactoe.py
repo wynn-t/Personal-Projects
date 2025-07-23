@@ -25,7 +25,7 @@ class Board:
             if (i<3 and len(unique(state[i::3]))==1 or i%3==0 and len(unique(state[i:i+3]))==1 or i==0 and len(unique(state[i::4]))==1 or i==2 and len(unique(state[i:8:2]))==1) and state[i]!=0:return state[i]
         return 0
     def eval(self, branch, ownTurn):
-        if ownTurn:return branch[max([i for i in branch if i not in ["state", "turn", "eval"]], key=lambda n:branch[n]["eval"])]["eval"]
+        if ownTurn:return branch[(max if branch["turn"]%2==0 else min)([i for i in branch if i not in ["state", "turn", "eval"]], key=lambda n:branch[n]["eval"])]["eval"]
         else:return sum([branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]])/(len(branch)-3)
     def display(self):
         print()
