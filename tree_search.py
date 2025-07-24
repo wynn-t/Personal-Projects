@@ -21,7 +21,7 @@ def compute(depth):
 humanPlayer=-1
 while humanPlayer not in [1, 2]:
     try:humanPlayer=int(input("\nInput player (1/2): "))
-    except ValueError:print("Please input a number.")
+    except ValueError:print("Please input an integer.")
     else:
         if humanPlayer not in [1, 2]:print("Please input either 1 or 2.")
 board.play(humanPlayer)
