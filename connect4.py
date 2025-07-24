@@ -1,4 +1,5 @@
 import __main__
+import random
 def unique(l):
     l=list(l)
     for i in range(len(l)-1, -1, -1):
@@ -37,6 +38,7 @@ class Board:
                             break
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(7) if state[i]==0}
         return result
+    def randomMove(self, state, turn):return random.choice(list(self.enumerateMoves(state, turn, False)))
     def applyMove(self, state, turn, move):
         state=list(state)
         state[max([i for i in range(move, len(state), 7) if state[i]==0])]=turn%2+1
