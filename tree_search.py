@@ -4,6 +4,7 @@ import connect4 as game
 board=game.Board()
 def compute(depth):
     tree=board.initTree()
+    if depth<1:return board.randomMove(tree["state"], tree["turn"])
     branches=[tree]
     for i in range(depth):
         for j in branches:
@@ -18,7 +19,7 @@ def compute(depth):
     #print(f"\nEval: {tree['eval']}")
     #print(f"\nBranch evals: {[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
-humanPlayer=-1
+humanPlayer=0
 while humanPlayer not in [1, 2]:
     try:humanPlayer=int(input("\nInput player (1/2): "))
     except ValueError:print("Please input an integer.")
