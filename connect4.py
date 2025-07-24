@@ -9,11 +9,12 @@ class Board:
     def __init__(self):
         self.state=[0]*42
         self.turn, self.difficulty=len(self.state)-self.state.count(0), -1
-        while self.difficulty not in range(7):
-            try:self.difficulty=int(input("\nInput difficulty (0 - 6): "))
-            except ValueError:print("Please input an integer.")
-            else:
-                if self.difficulty not in range(7):print("Please input an integer between 0 and 6, inclusive.")
+        if __name__!="__main__":
+            while self.difficulty not in range(7):
+                try:self.difficulty=int(input("\nInput difficulty (0 - 6): "))
+                except ValueError:print("Please input an integer.")
+                else:
+                    if self.difficulty not in range(7):print("Please input an integer between 0 and 6, inclusive.")
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
     def enumerateMoves(self, state, turn, reasonable=True):
         if self.winDetection(state)!=0:return {}
