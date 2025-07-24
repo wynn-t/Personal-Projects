@@ -67,7 +67,9 @@ class Board:
                     except ValueError:print("Please input a number.")
                     else:
                         if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
-            else:move=__main__.compute(5 if self.turn<15 else 6 if self.turn<25 else 7)
+            else:
+                difficulty=6
+                move=__main__.compute(difficulty if difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7)
             self.state=self.applyMove(self.state, self.turn, move)
             self.turn+=1
             if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==len(self.state) or self.winDetection(self.state)!=0:self.display()
