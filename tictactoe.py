@@ -13,8 +13,8 @@ class Board:
         if self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(len(state)) if state[i]==0}
         result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn, i))==turn%2+1}
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(len(state)) if state[i]==0}
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
         return result
     def applyMove(self, state, turn, move):
         state=list(state)
