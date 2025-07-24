@@ -6,16 +6,17 @@ def compute(depth):
     tree=board.initTree()
     branches=[tree]
     for i in range(depth):
-        for j in branches:j.update(board.enumerateMoves(j["state"], j["turn"]))
+        for j in branches:
+            if j["eval"]==0:j.update(board.enumerateMoves(j["state"], j["turn"]))
         branches=[j[k] for j in branches for k in j if k not in ["state", "turn", "eval"]]
     for i in range(depth-1, -1, -1):
         branches=[tree]
         for j in range(i):branches=[j[k] for j in branches for k in j if k not in ["state", "turn", "eval"]]
         for j in branches:
             if len(j)>3:j["eval"]=board.eval(j, i%2==0)
-    #print(f"\n{tree}")
-    #print(f"\n{tree['eval']}")
-    #print(f"\n{[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
+    #print(f"\nTree: {tree}")
+    #print(f"\nEval: {tree['eval']}")
+    #print(f"\nBranch evals: {[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 humanPlayer=-1
 while humanPlayer not in [1, 2]:
