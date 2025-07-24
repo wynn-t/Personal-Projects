@@ -20,7 +20,7 @@ def compute(depth):
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 humanPlayer=-1
 while humanPlayer not in [1, 2]:
-    try:humanPlayer=int(input("Input player (1/2): "))
+    try:humanPlayer=int(input("\nInput player (1/2): "))
     except ValueError:print("Please input a number.")
     else:
         if humanPlayer not in [1, 2]:print("Please input either 1 or 2.")
