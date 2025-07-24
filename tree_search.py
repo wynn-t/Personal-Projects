@@ -1,5 +1,6 @@
 import random
-import tictactoe as game
+import connect4 as game
+#import tictactoe as game
 board=game.Board()
 def compute(depth):
     tree=board.initTree()
@@ -13,7 +14,7 @@ def compute(depth):
         for j in branches:
             if len(j)>3:j["eval"]=board.eval(j, i%2==0)
     #print(f"\n{tree}")
-    #print(f"\n{tree["eval"]}")
+    #print(f"\n{tree['eval']}")
     #print(f"\n{[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 humanPlayer=-1
