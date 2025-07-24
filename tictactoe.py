@@ -1,4 +1,5 @@
 import __main__
+import random
 def unique(l):
     l=list(l)
     for i in range(len(l)-1, -1, -1):
@@ -16,6 +17,7 @@ class Board:
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
         return result
+    def randomMove(self, state, turn):return random.choice(list(self.enumerateMoves(state, turn, False)))
     def applyMove(self, state, turn, move):
         state=list(state)
         state[move]=turn%2+1
