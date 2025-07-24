@@ -64,7 +64,7 @@ class Board:
                 move=-1
                 while move not in self.enumerateMoves(self.state, self.turn, False):
                     try:move=int(input("Select a move by entering the corresponding number: "))
-                    except ValueError:print("Please input a number.")
+                    except ValueError:print("Please input an integer.")
                     else:
                         if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
             else:
