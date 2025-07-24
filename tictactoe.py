@@ -48,7 +48,7 @@ class Board:
                         if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
             else:
                 move=__main__.compute(self.state.count(0))
-                print("Computer played:", move)
+                print("\nComputer played:", move)
             self.state=self.applyMove(self.state, self.turn, move)
             self.turn+=1
             if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==len(self.state) or self.winDetection(self.state)!=0:self.display()
