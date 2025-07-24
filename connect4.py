@@ -8,7 +8,12 @@ def unique(l):
 class Board:
     def __init__(self):
         self.state=[0]*42
-        self.turn=len(self.state)-self.state.count(0)
+        self.turn, self.difficulty=len(self.state)-self.state.count(0), -1
+        while self.difficulty not in range(7):
+            try:self.difficulty=int(input("\nInput difficulty (0 - 6): "))
+            except ValueError:print("Please input an integer.")
+            else:
+                if self.difficulty not in range(7):print("Please input an integer between 0 and 6, inclusive.")
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
     def enumerateMoves(self, state, turn, reasonable=True):
         if self.winDetection(state)!=0:return {}
@@ -70,8 +75,8 @@ class Board:
                     else:
                         if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
             else:
-                difficulty, slots=6, self.state[:7].count(0)
-                move=__main__.compute(difficulty if difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
+                slots=self.state[:7].count(0)
+                move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
                 print("\nComputer played:", move)
             self.state=self.applyMove(self.state, self.turn, move)
             self.turn+=1
