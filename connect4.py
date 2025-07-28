@@ -78,13 +78,14 @@ class Board:
                     pygame.quit()
                     quit()
                 if event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and (__name__=="__main__" or self.turn%2+1==humanPlayer):move=event.pos[0]//100
-            if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
-                slots=self.state[:7].count(0)
-                move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
-                print("\nComputer played:", move, "\n")
-            if move in self.enumerateMoves(self.state, self.turn, False):
-                self.state=self.applyMove(self.state, self.turn, move)
-                self.turn+=1
+            if self.winDetection(self.state)==0 and 0 in self.state:
+                if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
+                    slots=self.state[:7].count(0)
+                    move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
+                    print("\nComputer played:", move, "\n")
+                if move in self.enumerateMoves(self.state, self.turn, False):
+                    self.state=self.applyMove(self.state, self.turn, move)
+                    self.turn+=1
             self.display(screen, humanPlayer)
 if __name__=="__main__":
     board=Board()
