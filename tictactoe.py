@@ -1,5 +1,7 @@
-import __main__
-import random
+import __main__, random, pygame
+from pygame.locals import *
+pygame.init()
+screen=pygame.display.set_mode((300, 350))
 def unique(l):
     l=list(l)
     for i in range(len(l)-1, -1, -1):
@@ -30,34 +32,36 @@ class Board:
         evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], 1 if branch["turn"]%2==0 else -1
         if ownTurn:return [max, max, min][temp](evals)
         else:return temp if temp in evals else sum(evals)/len(evals)
-    def display(self):
-        print()
-        for i in range(3):
-            for j in range(3):print(end=f" {[3*i+j, 'X', 'O'][self.state[3*i+j]]} {'||\n'[j]}")
-            if i!=2:print("---+---+---")
-        print("\n")
+    def display(self, window, humanPlayer=1):
+        window.fill((0, 0, 0))
+        window.blit(pygame.font.Font(None, 20).render((f"Player {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square.", True, (255, 255, 255)), (25, 15))
+        for i in range(2):
+            pygame.draw.rect(window, (255, 255, 255), (100*i+95, 50, 10, 300))
+            pygame.draw.rect(window, (255, 255, 255), (0, 100*i+145, 300, 10))
+        for i in range(len(self.state)):
+            if self.state[i]==1:
+                pygame.draw.polygon(window, (255, 255, 255), ((i%3*100+25, i//3*100+70), (i%3*100+20, i//3*100+75), (i%3*100+75, i//3*100+130), (i%3*100+80, i//3*100+125)))
+                pygame.draw.polygon(window, (255, 255, 255), ((i%3*100+75, i//3*100+70), (i%3*100+80, i//3*100+75), (i%3*100+25, i//3*100+130), (i%3*100+20, i//3*100+125)))
+            elif self.state[i]==2:pygame.draw.circle(window, (255, 255, 255), (i%3*100+50, i//3*100+100), 35, 7)
+        pygame.display.update()
     def play(self, humanPlayer=1):
-        if __name__=="__main__" or humanPlayer==1:self.display()
-        for i in range(self.state.count(0)):
-            if __name__=="__main__" or self.turn%2+1==humanPlayer:
-                move=-1
-                while move not in self.enumerateMoves(self.state, self.turn, False):
-                    try:move=int(input("Select a move by entering the corresponding number: "))
-                    except ValueError:print("Please input an integer.")
-                    else:
-                        if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
-            else:
-                move=__main__.compute(self.state.count(0))
-                print("\nComputer played:", move)
-            self.state=self.applyMove(self.state, self.turn, move)
-            self.turn+=1
-            if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==len(self.state) or self.winDetection(self.state)!=0:self.display()
-            if self.winDetection(self.state)!=0:
-                if __name__=="__main__":print(f"Player {self.winDetection(self.state)} wins!\n")
-                elif self.winDetection(self.state)==humanPlayer:print("The player wins!\n")
-                else:print("The computer wins!\n")
-                break
-        else:print("It's a tie.\n")
+        print()
+        self.display(screen, humanPlayer)
+        while True:
+            move=-1
+            for event in pygame.event.get():
+                if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                if event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50:move=event.pos[0]//100+(event.pos[1]-50)//100*3
+            if self.winDetection(self.state)==0 and 0 in self.state:
+                if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
+                    move=__main__.compute(self.state.count(0))
+                    print("\nComputer played:", move, "\n")
+                if move in self.enumerateMoves(self.state, self.turn, False):
+                    self.state=self.applyMove(self.state, self.turn, move)
+                    self.turn+=1
+            self.display(screen, humanPlayer)
 if __name__=="__main__":
     board=Board()
     board.play()
