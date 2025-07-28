@@ -62,7 +62,7 @@ class Board:
         else:return temp if temp in evals else sum(evals)/len(evals)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
-        window.blit(pygame.font.Font(None, 30).render("Click on a column to play in that column.", True, (255, 255, 255)), (40, 25))
+        window.blit(pygame.font.Font(None, 30).render((f"Player {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a column to play in that column.", True, (255, 255, 255)), (40, 25))
         if __name__!="__main__":
             window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
             pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
@@ -71,7 +71,7 @@ class Board:
     def play(self, humanPlayer=1):
         print()
         self.display(screen, humanPlayer)
-        while 0 in self.state and self.winDetection(self.state)==0:
+        while True:
             move=-1
             for event in pygame.event.get():
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
@@ -86,11 +86,6 @@ class Board:
                 self.state=self.applyMove(self.state, self.turn, move)
                 self.turn+=1
             self.display(screen, humanPlayer)
-        if self.winDetection(self.state)!=0:
-            if __name__=="__main__":print(f"Player {self.winDetection(self.state)} wins!\n")
-            elif self.winDetection(self.state)==humanPlayer:print("The player wins!\n")
-            else:print("The computer wins!\n")
-        else:print("It's a tie.\n")
 if __name__=="__main__":
     board=Board()
     board.play()
