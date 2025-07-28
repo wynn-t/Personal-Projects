@@ -1,5 +1,7 @@
-import __main__
-import random
+import __main__, random, pygame
+from pygame.locals import *
+pygame.init()
+screen=pygame.display.set_mode((700, 650))
 def unique(l):
     l=list(l)
     for i in range(len(l)-1, -1, -1):
@@ -58,35 +60,36 @@ class Board:
         evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], 1 if branch["turn"]%2==0 else -1
         if ownTurn:return [max, max, min][temp](evals)
         else:return temp if temp in evals else sum(evals)/len(evals)
-    def display(self):
-        print()
-        for i in range(7):print(end=f" {i} "+("\n\n" if i==6 else "|"))
-        for i in range(6):
-            for j in range(7):print(end=f" {' 12'[self.state[7*i+j]]} "+("\n" if j==6 else "|"))
-            if i!=5:print("---+"*6+"---")
-        print("\n")
+    def display(self, window, humanPlayer=1):
+        window.fill((0, 0, 0))
+        window.blit(pygame.font.Font(None, 30).render("Click on a column to play in that column.", True, (255, 255, 255)), (40, 25))
+        if __name__!="__main__":
+            window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
+            pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
+        for i in range(len(self.state)):pygame.draw.circle(window, (127, 127, 127) if self.state[i]==0 else (255, 255 if self.state[i]==1 else 0, 0), (i%7*100+50, i//7*100+100), 35)
+        pygame.display.update()
     def play(self, humanPlayer=1):
-        if __name__=="__main__" or humanPlayer==1:self.display()
-        for i in range(self.state.count(0)):
-            if __name__=="__main__" or self.turn%2+1==humanPlayer:
-                move=-1
-                while move not in self.enumerateMoves(self.state, self.turn, False):
-                    try:move=int(input("Select a move by entering the corresponding number: "))
-                    except ValueError:print("Please input an integer.")
-                    else:
-                        if move not in self.enumerateMoves(self.state, self.turn, False):print("Please select an available move.")
-            else:
+        print()
+        self.display(screen, humanPlayer)
+        while 0 in self.state and self.winDetection(self.state)==0:
+            move=-1
+            for event in pygame.event.get():
+                if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                if event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and (__name__=="__main__" or self.turn%2+1==humanPlayer):move=event.pos[0]//100
+            if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
                 slots=self.state[:7].count(0)
                 move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
-                print("\nComputer played:", move)
-            self.state=self.applyMove(self.state, self.turn, move)
-            self.turn+=1
-            if __name__=="__main__" or self.turn%2+1==humanPlayer or self.turn==len(self.state) or self.winDetection(self.state)!=0:self.display()
-            if self.winDetection(self.state)!=0:
-                if __name__=="__main__":print(f"Player {self.winDetection(self.state)} wins!\n")
-                elif self.winDetection(self.state)==humanPlayer:print("The player wins!\n")
-                else:print("The computer wins!\n")
-                break
+                print("\nComputer played:", move, "\n")
+            if move in self.enumerateMoves(self.state, self.turn, False):
+                self.state=self.applyMove(self.state, self.turn, move)
+                self.turn+=1
+            self.display(screen, humanPlayer)
+        if self.winDetection(self.state)!=0:
+            if __name__=="__main__":print(f"Player {self.winDetection(self.state)} wins!\n")
+            elif self.winDetection(self.state)==humanPlayer:print("The player wins!\n")
+            else:print("The computer wins!\n")
         else:print("It's a tie.\n")
 if __name__=="__main__":
     board=Board()
