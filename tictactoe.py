@@ -59,7 +59,7 @@ class Board:
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
                     quit()
-                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50:move=event.pos[0]//100+(event.pos[1]-50)//100*3
+                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50 and 5<=event.pos[0]%100<=95 and 5<=event.pos[1]%100<=95:move=event.pos[0]//100+(event.pos[1]-50)//100*3
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
                         if textInput=="" or status=="player" and int(textInput) not in [1, 2]:invalidInput=True
