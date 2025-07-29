@@ -19,10 +19,4 @@ def compute(depth):
     #print(f"\nEval: {tree['eval']}")
     #print(f"\nBranch evals: {[tree[i]['eval'] for i in tree if i not in ['state', 'turn', 'eval']]}")
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
-humanPlayer=0
-while humanPlayer not in [1, 2]:
-    try:humanPlayer=int(input("\nInput player (1/2): "))
-    except ValueError:print("Please input an integer.")
-    else:
-        if humanPlayer not in [1, 2]:print("Please input either 1 or 2.")
-board.play(humanPlayer)
+board.play()
