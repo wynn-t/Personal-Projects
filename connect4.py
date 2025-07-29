@@ -10,13 +10,7 @@ def unique(l):
 class Board:
     def __init__(self):
         self.state=[0]*42
-        self.turn, self.difficulty=len(self.state)-self.state.count(0), -1
-        if __name__!="__main__":
-            while self.difficulty not in range(7):
-                try:self.difficulty=int(input("\nInput difficulty (0 - 6): "))
-                except ValueError:print("Please input an integer.")
-                else:
-                    if self.difficulty not in range(7):print("Please input an integer between 0 and 6, inclusive.")
+        self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
     def enumerateMoves(self, state, turn, reasonable=True):
         if self.winDetection(state)!=0:return {}
@@ -62,13 +56,22 @@ class Board:
         else:return temp if temp in evals else sum(evals)/len(evals)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
-        window.blit(pygame.font.Font(None, 30).render((f"Player {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a column to play in that column.", True, (255, 255, 255)), (40, 25))
-        if __name__!="__main__":
-            window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
-            pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
-        for i in range(len(self.state)):pygame.draw.circle(window, (127, 127, 127) if self.state[i]==0 else (255, 255 if self.state[i]==1 else 0, 0), (i%7*100+50, i//7*100+100), 35)
+        if status=="difficulty":
+            window.blit(pygame.font.Font(None, 100).render("Difficulty: "+textInput, True, (255, 255, 255)), (40, 275))
+            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 6, inclusive.", True, (255, 0, 0)), (45, 350))
+        elif status=="player":
+            window.blit(pygame.font.Font(None, 100).render("Player: "+textInput, True, (255, 255, 255)), (40, 275))
+            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input either 1 or 2.", True, (255, 0, 0)), (45, 350))
+        else:
+            window.blit(pygame.font.Font(None, 30).render((f"Player {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a column to play in that column.", True, (255, 255, 255)), (40, 25))
+            if __name__!="__main__":
+                window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
+                pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
+            for i in range(len(self.state)):pygame.draw.circle(window, (127, 127, 127) if self.state[i]==0 else (255, 255 if self.state[i]==1 else 0, 0), (i%7*100+50, i//7*100+100), 35)
         pygame.display.update()
-    def play(self, humanPlayer=1):
+    def play(self):
+        global textInput, status, invalidInput
+        textInput, status, invalidInput, humanPlayer="", "difficulty" if __name__!="__main__" else "playing", False, -1
         print()
         self.display(screen, humanPlayer)
         while True:
@@ -77,8 +80,20 @@ class Board:
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
                     quit()
-                if event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and (__name__=="__main__" or self.turn%2+1==humanPlayer):move=event.pos[0]//100
-            if self.winDetection(self.state)==0 and 0 in self.state:
+                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85:move=event.pos[0]//100
+                elif event.type==KEYDOWN:
+                    if event.key==K_RETURN:
+                        if textInput=="" or status=="difficulty" and int(textInput) not in range(7) or status=="player" and int(textInput) not in [1, 2]:invalidInput=True
+                        elif status=="difficulty":self.difficulty, status, textInput=int(textInput), "player", ""
+                        elif status=="player":
+                            humanPlayer, status=int(textInput), "playing"
+                            self.display(screen, humanPlayer)
+                    elif event.key==K_BACKSPACE:textInput, invalidInput=textInput[:-1], False
+                    elif pygame.key.name(event.key).isnumeric():
+                        if invalidInput:textInput=""
+                        textInput+=pygame.key.name(event.key)
+                        invalidInput=False
+            if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
                 if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
                     move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
