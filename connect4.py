@@ -57,7 +57,7 @@ class Board:
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":
-            window.blit(pygame.font.Font(None, 100).render("Difficulty: "+textInput, True, (255, 255, 255)), (40, 275))
+            window.blit(pygame.font.Font(None, 100).render("Difficulty (0 - 6): "+textInput, True, (255, 255, 255)), (40, 275))
             if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 6, inclusive.", True, (255, 0, 0)), (45, 350))
         elif status=="player":
             window.blit(pygame.font.Font(None, 100).render("Player: "+textInput, True, (255, 255, 255)), (40, 275))
