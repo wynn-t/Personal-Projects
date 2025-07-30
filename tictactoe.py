@@ -38,7 +38,7 @@ class Board:
             window.blit(pygame.font.Font(None, 50).render("Player: "+textInput, True, (255, 255, 255)), (40, 150))
             if invalidInput:window.blit(pygame.font.Font(None, 20).render("Please input either 1 or 2.", True, (255, 0, 0)), (42, 190))
         else:
-            window.blit(pygame.font.Font(None, 20).render((f"Player {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square.", True, (255, 255, 255)), (25, 15))
+            window.blit(pygame.font.Font(None, 20).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square." if humanPlayer!=0 else "", True, (255, 255, 255)), (25, 15))
             for i in range(2):
                 pygame.draw.rect(window, (255, 255, 255), (100*i+95, 50, 10, 300))
                 pygame.draw.rect(window, (255, 255, 255), (0, 100*i+145, 300, 10))
@@ -59,10 +59,10 @@ class Board:
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
                     quit()
-                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50 and 5<=event.pos[0]%100<=95 and 5<=event.pos[1]%100<=95:move=event.pos[0]//100+(event.pos[1]-50)//100*3
+                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50 and 5<=event.pos[0]%100<=95 and 5<=(event.pos[1]-50)%100<=95:move=event.pos[0]//100+(event.pos[1]-50)//100*3
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
-                        if textInput=="" or status=="player" and int(textInput) not in [1, 2]:invalidInput=True
+                        if textInput=="" or status=="player" and int(textInput) not in range(3):invalidInput=True
                         elif status=="player":
                             humanPlayer, status=int(textInput), "playing"
                             self.display(screen, humanPlayer)
