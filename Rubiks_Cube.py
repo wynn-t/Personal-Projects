@@ -95,13 +95,17 @@ class Cube:
                 self.rotate("F")
                 self.rotate("S")
                 if self.size>1:self.rotate("B", 3)
-    def scramble(self):
+    def scramble(self, turnChoice=...):
+        custom=True
+        if turnChoice==...:turnChoice, custom=self.turnChoice, False
         turnType, pTypes=0.5, [0.5]
         for i in range(15 if self.size==2 else 35 if self.size==3 else 40*self.size-100):
-            while turnType in pTypes:turnType=random.randint(0, len(self.turnChoice)-1)
-            if turnType%3!=pTypes[0]%3:pTypes=[turnType]
-            else:pTypes+=[turnType]
-            self.rotate(self.turnChoice[turnType], random.randint(1, 3))
+            if custom:turnType=random.randint(0, len(turnChoice)-1)
+            else:
+                while turnType in pTypes:turnType=random.randint(0, len(turnChoice)-1)
+                if turnType%3!=pTypes[0]%3:pTypes=[turnType]
+                else:pTypes+=[turnType]
+            self.rotate(turnChoice[turnType], random.randint(1, 3))
     def drawCube(self, window, x, y, drawSize):
         for i in range(self.size):
             for j in range(self.size):pygame.draw.polygon(window, self.state[i*self.size+j], ((x+(0.4+((j+0.05)*0.6-(i+0.05)*0.4)/self.size)*drawSize, y+((i+0.05)*0.3+(j+0.05)*0.2)/self.size*drawSize), (x+(0.4+((j+0.05)*0.6-(i+0.95)*0.4)/self.size)*drawSize, y+((i+0.95)*0.3+(j+0.05)*0.2)/self.size*drawSize), (x+(0.4+((j+0.95)*0.6-(i+0.95)*0.4)/self.size)*drawSize, y+((i+0.95)*0.3+(j+0.95)*0.2)/self.size*drawSize), (x+(0.4+((j+0.95)*0.6-(i+0.05)*0.4)/self.size)*drawSize, y+((i+0.05)*0.3+(j+0.95)*0.2)/self.size*drawSize)))
