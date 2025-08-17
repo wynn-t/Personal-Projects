@@ -1,7 +1,5 @@
 import __main__, random, pygame
 from pygame.locals import *
-pygame.init()
-screen=pygame.display.set_mode((300, 350))
 def unique(l):
     l=list(l)
     for i in range(len(l)-1, -1, -1):
@@ -49,8 +47,10 @@ class Board:
                 elif self.state[i]==2:pygame.draw.circle(window, (255, 255, 255), (i%3*100+50, i//3*100+100), 35, 7)
         pygame.display.update()
     def play(self):
-        global textInput, status, invalidInput
-        textInput, status, invalidInput, humanPlayer="", "player" if __name__!="__main__" else "playing", False, -1
+        pygame.init()
+        self.__init__()
+        global screen, textInput, status, invalidInput
+        screen, textInput, status, invalidInput, humanPlayer=pygame.display.set_mode((300, 350)), "", "player" if __name__!="__main__" else "playing", False, -1
         print()
         self.display(screen, humanPlayer)
         while True:
@@ -58,7 +58,7 @@ class Board:
             for event in pygame.event.get():
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
-                    quit()
+                    return
                 elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and event.pos[1]>=50 and 5<=event.pos[0]%100<=95 and 5<=(event.pos[1]-50)%100<=95:move=event.pos[0]//100+(event.pos[1]-50)//100*3
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
@@ -79,6 +79,4 @@ class Board:
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
             self.display(screen, humanPlayer)
-if __name__=="__main__":
-    board=Board()
-    board.play()
+if __name__=="__main__":Board().play()
