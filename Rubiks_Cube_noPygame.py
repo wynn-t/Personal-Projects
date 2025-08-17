@@ -95,13 +95,17 @@ class Cube:
                 self.rotate("f")
                 self.rotate("s")
                 if self.size>1:self.rotate("b", 3)
-    def scramble(self):
+    def scramble(self, turnChoice=...):
+        custom=True
+        if turnChoice==...:turnChoice, custom=self.turnChoice, False
         turnType, pTypes=0.5, [0.5]
         for i in range(15 if self.size==2 else 35 if self.size==3 else 40*self.size-100):
-            while turnType in pTypes:turnType=random.randint(0, len(self.turnChoice)-1)
-            if turnType%3!=pTypes[0]%3:pTypes=[turnType]
-            else:pTypes+=[turnType]
-            self.rotate(self.turnChoice[turnType], random.randint(1, 3))
+            if custom:turnType=random.randint(0, len(turnChoice)-1)
+            else:
+                while turnType in pTypes:turnType=random.randint(0, len(turnChoice)-1)
+                if turnType%3!=pTypes[0]%3:pTypes=[turnType]
+                else:pTypes+=[turnType]
+            self.rotate(turnChoice[turnType], random.randint(1, 3))
     def display(self):
         for i in range(self.size):
             print(end="\n   "+"   "*self.size)
