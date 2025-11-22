@@ -40,7 +40,7 @@ class Board:
                         result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                         break
                 if len(result)>0:break
-                # Engine buffs (may cause mistakes in edge cases)
+                # Engine buffs (somewhat slower, may cause mistakes in edge cases)
                 """for j in range(5):
                     if state[j*7+i]==0 and state[j*7+i+7]==0 and self.winDetection(state[:j*7+i]+[turn%2+1]+state[j*7+i+1:])==turn%2+1 and self.winDetection(state[:j*7+i+7]+[turn%2+1]+state[j*7+i+8:])==turn%2+1:
                         result[i], flag={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}, True
@@ -48,7 +48,11 @@ class Board:
                 if flag:
                     for j in dict(result):
                         if j not in ["state", "turn", "eval", i]:result.pop(j)
-                    break"""
+                    break
+                for j in range(len(temp)-7):
+                    if temp[j]==0 and temp[j+7]==0 and self.winDetection(temp[:j]+[turn%2+1]+temp[j+1:])==turn%2+1 and self.winDetection(temp[:j+7]+[turn%2+1]+temp[j+8:])==turn%2+1:
+                        result[i]={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}
+                        break"""
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in (options if len(options)>0 else range(7)) if state[i]==0}
         return result
     def randomMove(self, state, turn):return random.choice(list(self.enumerateMoves(state, turn, False)))
