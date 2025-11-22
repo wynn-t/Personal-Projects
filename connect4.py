@@ -13,30 +13,43 @@ class Board:
     def enumerateMoves(self, state, turn, reasonable=True):
         if self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(7) if state[i]==0}
-        result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(7) if state[i]==0 and self.winDetection(self.applyMove(state, turn, i))==turn%2+1}
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(7) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
+        if turn==0:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":1}}
+        result, options={}, list(range(7))
+        for i in range(7):
+            if state[i]!=0:
+                options.remove(i)
+                continue
+        for i in options:
+            if self.winDetection(self.applyMove(state, turn, i))==turn%2+1:
+                result[i]={"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
+                break
         if len(result)==0:
-            for i in range(7):
-                if state[i]==0:temp=self.applyMove(state, turn, i)
-                if state[i]==0 and (temp[i]!=0 or temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))!=(turn+1)%2+1):
-                    temp2=False
-                    for j in range(5):
-                        if state[j*7+i]==0 and state[j*7+i+7]==0 and self.winDetection(state[:j*7+i]+[turn%2+1]+state[j*7+i+1:])==turn%2+1 and self.winDetection(state[:j*7+i+7]+[turn%2+1]+state[j*7+i+8:])==turn%2+1:
-                            result[i], temp2={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}, True
-                            break
-                    if temp2:
-                        for j in dict(result):
-                            if j not in ["state", "turn", "eval", i]:result.pop(j)
+            for i in options:
+                if self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1:
+                    result[i]={"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0}
+                    break
+        if len(result)==0:
+            for i in list(options):
+                temp, count, flag=self.applyMove(state, turn, i), 0, False
+                if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))==(turn+1)%2+1:
+                    options.remove(i)
+                    continue
+                for j in range(max(i-3, 0), min(i+4, 7)):
+                    if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:count+=1
+                    if count==2:
+                        result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                         break
-                    result[i], count={"state":temp, "turn":turn+1, "eval":0}, 0
-                    for j in range(7):
-                        if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:count+=1
-                    if count>1:result[i]["eval"]=1 if turn%2==0 else -1
-                    for j in range(len(temp)-7):
-                        if temp[j]==0 and temp[j+7]==0 and self.winDetection(temp[:j]+[turn%2+1]+temp[j+1:])==turn%2+1 and self.winDetection(temp[:j+7]+[turn%2+1]+temp[j+8:])==turn%2+1:
-                            result[i]["eval"]=1 if turn%2==0 else -1
-                            break
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(7) if state[i]==0}
+                if len(result)>0:break
+                # Engine buffs (may cause mistakes in edge cases)
+                """for j in range(5):
+                    if state[j*7+i]==0 and state[j*7+i+7]==0 and self.winDetection(state[:j*7+i]+[turn%2+1]+state[j*7+i+1:])==turn%2+1 and self.winDetection(state[:j*7+i+7]+[turn%2+1]+state[j*7+i+8:])==turn%2+1:
+                        result[i], flag={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}, True
+                        break
+                if flag:
+                    for j in dict(result):
+                        if j not in ["state", "turn", "eval", i]:result.pop(j)
+                    break"""
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in (options if len(options)>0 else range(7)) if state[i]==0}
         return result
     def randomMove(self, state, turn):return random.choice(list(self.enumerateMoves(state, turn, False)))
     def applyMove(self, state, turn, move):
@@ -55,8 +68,8 @@ class Board:
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":
-            window.blit(pygame.font.Font(None, 100).render("Difficulty (0 - 6): "+textInput, True, (255, 255, 255)), (40, 275))
-            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 6, inclusive.", True, (255, 0, 0)), (45, 350))
+            window.blit(pygame.font.Font(None, 100).render("Difficulty (0 - 8): "+textInput, True, (255, 255, 255)), (40, 275))
+            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 8, inclusive.", True, (255, 0, 0)), (45, 350))
         elif status=="player":
             window.blit(pygame.font.Font(None, 100).render("Player: "+textInput, True, (255, 255, 255)), (40, 275))
             if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input either 1 or 2.", True, (255, 0, 0)), (45, 350))
@@ -83,7 +96,7 @@ class Board:
                 elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85:move=event.pos[0]//100
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
-                        if textInput=="" or status=="difficulty" and int(textInput) not in range(7) or status=="player" and int(textInput) not in range(3):invalidInput=True
+                        if textInput=="" or status=="difficulty" and int(textInput) not in range(9) or status=="player" and int(textInput) not in range(3):invalidInput=True
                         elif status=="difficulty":self.difficulty, status, textInput=int(textInput), "player", ""
                         elif status=="player":
                             humanPlayer, status=int(textInput), "playing"
@@ -96,7 +109,7 @@ class Board:
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
                 if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
-                    move=__main__.compute(self.difficulty if self.difficulty<6 else 5 if self.turn<15 else 6 if self.turn<25 else 7 if slots>5 else 8 if slots==5 else 9 if slots==4 else 12)
+                    move=__main__.compute(self.difficulty if self.difficulty<7 else self.difficulty-1 if self.turn<15 else self.difficulty if self.turn<25 else self.difficulty+1 if slots>5 else self.difficulty+3 if slots==5 else self.difficulty+5 if slots==4 else self.difficulty+10)
                     print("\nComputer played:", move, "\n")
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
