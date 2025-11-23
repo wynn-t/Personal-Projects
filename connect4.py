@@ -30,11 +30,12 @@ class Board:
                     break
         if len(result)==0:
             for i in list(options):
-                temp, count=self.applyMove(state, turn, i), 0
+                temp=self.applyMove(state, turn, i)
                 if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))==(turn+1)%2+1:
                     options.remove(i)
                     continue
             for i in options:
+                temp, count=self.applyMove(state, turn, i), 0
                 for j in range(max(i-3, 0), min(i+4, 7)):
                     if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:count+=1
                     if count==2:
