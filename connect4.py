@@ -30,28 +30,33 @@ class Board:
                     break
         if len(result)==0:
             for i in list(options):
-                temp, count, flag=self.applyMove(state, turn, i), 0, False
+                temp, count=self.applyMove(state, turn, i), 0
                 if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))==(turn+1)%2+1:
                     options.remove(i)
                     continue
+            for i in options:
                 for j in range(max(i-3, 0), min(i+4, 7)):
                     if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:count+=1
                     if count==2:
                         result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                         break
                 if len(result)>0:break
-                # Engine buffs (somewhat slower, may cause mistakes in edge cases)
-                """for j in range(5):
+        # Engine buffs (somewhat slower, may cause mistakes in edge cases)
+        """if len(result)==0:
+            for i in options:
+                temp, flag=self.applyMove(state, turn, i), False
+                for j in range(5):
                     if state[j*7+i]==0 and state[j*7+i+7]==0 and self.winDetection(state[:j*7+i]+[turn%2+1]+state[j*7+i+1:])==turn%2+1 and self.winDetection(state[:j*7+i+7]+[turn%2+1]+state[j*7+i+8:])==turn%2+1:
-                        result[i], flag={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}, True
+                        result[i], flag={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}, True
                         break
                 if flag:
                     for j in dict(result):
                         if j not in ["state", "turn", "eval", i]:result.pop(j)
                     break
                 for j in range(len(temp)-7):
+                    if j%7<i-3 or j%7>i+3:continue
                     if temp[j]==0 and temp[j+7]==0 and self.winDetection(temp[:j]+[turn%2+1]+temp[j+1:])==turn%2+1 and self.winDetection(temp[:j+7]+[turn%2+1]+temp[j+8:])==turn%2+1:
-                        result[i]={"state":temp, "turn":turn+1, "eval":1 if turn%2==0 else -1}
+                        result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                         break"""
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in (options if len(options)>0 else range(7)) if state[i]==0}
         return result
