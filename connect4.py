@@ -10,8 +10,8 @@ class Board:
         self.state=[0]*42
         self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
-    def enumerateMoves(self, state, turn, reasonable=True):
-        if self.winDetection(state)!=0:return {}
+    def enumerateMoves(self, state, turn, eval=0, reasonable=True):
+        if eval!=0 or self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(7) if state[i]==0}
         if turn==0:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":1}}
         result, options={}, list(range(7))
