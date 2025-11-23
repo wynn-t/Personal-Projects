@@ -10,7 +10,7 @@ class Board:
         self.state=[0]*42
         self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
-    def enumerateMoves(self, state, turn, eval=0, reasonable=True):
+    def enumerateMoves(self, state, turn, reasonable=True, *, eval=0):
         if eval!=0 or self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(7) if state[i]==0}
         if turn==0:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":1}}
@@ -97,7 +97,7 @@ class Board:
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
                     return
-                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85:move=event.pos[0]//100
+                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85 and event.pos[1]>=50:move=event.pos[0]//100
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
                         if textInput=="" or status=="difficulty" and int(textInput) not in range(9) or status=="player" and int(textInput) not in range(3):invalidInput=True
