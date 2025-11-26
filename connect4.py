@@ -77,8 +77,8 @@ class Board:
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":
-            window.blit(pygame.font.Font(None, 100).render("Difficulty (0 - 8): "+textInput, True, (255, 255, 255)), (40, 275))
-            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 8, inclusive.", True, (255, 0, 0)), (45, 350))
+            window.blit(pygame.font.Font(None, 100).render("Difficulty (0 - 9): "+textInput, True, (255, 255, 255)), (40, 275))
+            if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input an integer between 0 and 9, inclusive.", True, (255, 0, 0)), (45, 350))
         elif status=="player":
             window.blit(pygame.font.Font(None, 100).render("Player: "+textInput, True, (255, 255, 255)), (40, 275))
             if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input either 1 or 2.", True, (255, 0, 0)), (45, 350))
@@ -105,7 +105,7 @@ class Board:
                 elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85 and event.pos[1]>=50:move=event.pos[0]//100
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
-                        if textInput=="" or status=="difficulty" and int(textInput) not in range(9) or status=="player" and int(textInput) not in range(3):invalidInput=True
+                        if textInput=="" or status=="difficulty" and int(textInput) not in range(10) or status=="player" and int(textInput) not in range(3):invalidInput=True
                         elif status=="difficulty":self.difficulty, status, textInput=int(textInput), "player", ""
                         elif status=="player":
                             humanPlayer, status=int(textInput), "playing"
@@ -118,7 +118,7 @@ class Board:
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
                 if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
-                    move=__main__.compute(self.difficulty if self.difficulty<7 else self.difficulty-1 if self.turn<15 else self.difficulty if self.turn<25 else self.difficulty+1 if slots>5 else self.difficulty+3 if slots==5 else self.difficulty+5 if slots==4 else self.difficulty+10)
+                    move=__main__.compute(self.difficulty if self.difficulty<6 else self.difficulty if self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)# if slots==4 else self.difficulty+15)
                     print("\nComputer played:", move, "\n")
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
