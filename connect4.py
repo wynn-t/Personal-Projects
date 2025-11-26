@@ -1,10 +1,9 @@
 import __main__, random, pygame
 from pygame.locals import *
-def unique(l):
-    l=list(l)
-    for i in range(len(l)-1, -1, -1):
-        if l[i] in l[:i]:l.pop(i)
-    return l
+def connect(l):
+    for i in l:
+        if i!=l[0]:return False
+    return True
 class Board:
     def __init__(self):
         self.state=[0]*42
@@ -20,8 +19,9 @@ class Board:
                 options.remove(i)
                 continue
         for i in options:
-            if self.winDetection(self.applyMove(state, turn, i))==turn%2+1:
-                result[i]={"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
+            temp=self.applyMove(state, turn, i)
+            if self.winDetection(temp)==turn%2+1:
+                result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                 break
         if len(result)==0:
             for i in options:
@@ -67,8 +67,8 @@ class Board:
         state[max([i for i in range(move, len(state), 7) if state[i]==0])]=turn%2+1
         return state
     def winDetection(self, state):
-        for i in range(len(state)):
-            if (i<21 and len(unique(state[i:i+22:7]))==1 or i%7<4 and len(unique(state[i:i+4]))==1 or i<18 and i%7<4 and len(unique(state[i:i+25:8]))==1 or i<21 and i%7>2 and len(unique(state[i:i+19:6]))==1) and state[i]!=0:return state[i]
+        for i in range(len(state)-3):
+            if (i<21 and connect(state[i:i+22:7]) or i%7<4 and connect(state[i:i+4]) or i<18 and i%7<4 and connect(state[i:i+25:8]) or i<21 and i%7>2 and connect(state[i:i+19:6])) and state[i]!=0:return state[i]
         return 0
     def eval(self, branch, ownTurn):
         evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], [1, -1][branch["turn"]%2]
