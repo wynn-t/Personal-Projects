@@ -10,8 +10,8 @@ def compute(depth):
     search(depth, tree)
     #print("\nCache:", cache)
     #print("\nTree:", tree)
-    print("\nEval:", tree["eval"])
-    print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ["state", "turn", "eval"]})
+    #print("\nEval:", tree["eval"])
+    #print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ["state", "turn", "eval"]})
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 def search(depth, node):
     state=tuple(node["state"])
