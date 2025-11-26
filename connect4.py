@@ -66,7 +66,8 @@ class Board:
             window.blit(pygame.font.Font(None, 100).render("Player: "+textInput, True, (255, 255, 255)), (40, 275))
             if invalidInput:window.blit(pygame.font.Font(None, 30).render("Please input either 1 or 2.", True, (255, 0, 0)), (45, 350))
         else:
-            window.blit(pygame.font.Font(None, 30).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {self.winDetection(self.state)} wins!" if __name__=="__main__" or humanPlayer==0 else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a column to play in that column." if humanPlayer!=0 else "", True, (255, 255, 255)), (40, 25))
+            temp=self.winDetection(self.state)
+            window.blit(pygame.font.Font(None, 30).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {temp} wins!" if __name__=="__main__" or humanPlayer==0 else "The player wins!" if temp==humanPlayer else "The computer wins!") if temp!=0 else "It's a tie." if 0 not in self.state else "Click on a column to play in that column." if humanPlayer!=0 else "", True, (255, 255, 255)), (40, 25))
             if __name__!="__main__" and humanPlayer!=0:
                 window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
                 pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
@@ -99,7 +100,7 @@ class Board:
                         textInput+=pygame.key.name(event.key)
                         invalidInput=False
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
-                if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
+                if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
                     move=__main__.compute(self.difficulty if self.difficulty<6 or self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)
                     print("\nComputer played:", move, "\n")
