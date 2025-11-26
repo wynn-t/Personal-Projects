@@ -7,7 +7,7 @@ def compute(depth):
     if depth<1:return board.randomMove(tree["state"], tree["turn"])
     branches=[tree]
     for i in range(depth):
-        for j in branches:j.update(board.enumerateMoves(j["state"], j["turn"], eval=j["eval"]))
+        for j in branches:j.update(board.enumerateMoves(j["state"], j["turn"], evaluation=j["eval"]))
         branches=[j[k] for j in branches for k in j if k not in ["state", "turn", "eval"]]
     for i in range(depth-1, -1, -1):
         branches=[tree]
