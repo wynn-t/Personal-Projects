@@ -72,7 +72,7 @@ class Board:
                         textInput+=pygame.key.name(event.key)
                         invalidInput=False
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
-                if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
+                if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     move=__main__.compute(self.state.count(0))
                     print("\nComputer played:", move, "\n")
                 if move in self.enumerateMoves(self.state, self.turn, False):
