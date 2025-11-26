@@ -12,7 +12,7 @@ class Board:
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
     def enumerateMoves(self, state, turn, reasonable=True, *, evaluation=0):
         if evaluation!=0 or self.winDetection(state)!=0:return {}
-        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][self.winDetection(self.applyMove(state, turn, i))]} for i in range(7) if state[i]==0}
+        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(7) if state[i]==0}
         if turn==0:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":1}}
         result, options={}, list(range(7))
         for i in range(7):
