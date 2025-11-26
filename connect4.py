@@ -118,7 +118,7 @@ class Board:
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
                 if self.winDetection(self.state)==0 and __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
-                    move=__main__.compute(self.difficulty if self.difficulty<6 else self.difficulty if self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)# if slots==4 else self.difficulty+15)
+                    move=__main__.compute(self.difficulty if self.difficulty<6 else self.difficulty if self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)
                     print("\nComputer played:", move, "\n")
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
