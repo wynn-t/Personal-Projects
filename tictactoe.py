@@ -1,10 +1,9 @@
 import __main__, random, pygame
 from pygame.locals import *
-def unique(l):
-    l=list(l)
-    for i in range(len(l)-1, -1, -1):
-        if l[i] in l[:i]:l.pop(i)
-    return l
+def row(l):
+    for i in l:
+        if i!=l[0]:return False
+    return True
 class Board:
     def __init__(self):
         self.state=[0]*9
@@ -13,7 +12,7 @@ class Board:
     def enumerateMoves(self, state, turn, reasonable=True, *, evaluation=0):
         if evaluation!=0 or self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
-        result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":[0, 1, -1][turn%2+1]} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn, i))==turn%2+1}
+        result={i:{"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]} for i in range(len(state)) if state[i]==0 and self.winDetection(temp:=self.applyMove(state, turn, i))==turn%2+1}
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
         return result
@@ -23,8 +22,8 @@ class Board:
         state[move]=turn%2+1
         return state
     def winDetection(self, state):
-        for i in range(len(state)):
-            if (i<3 and len(unique(state[i:i+7:3]))==1 or i%3==0 and len(unique(state[i:i+3]))==1 or i==0 and len(unique(state[i:i+9:4]))==1 or i==2 and len(unique(state[i:i+5:2]))==1) and state[i]!=0:return state[i]
+        for i in list(range(4))+[6]:
+            if (i<3 and row(state[i:i+7:3]) or i%3==0 and row(state[i:i+3]) or i==0 and row(state[i:i+9:4]) or i==2 and row(state[i:i+5:2])) and state[i]!=0:return state[i]
         return 0
     def eval(self, branch, ownTurn):
         evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], [1, -1][branch["turn"]%2]
