@@ -35,7 +35,8 @@ class Board:
             window.blit(pygame.font.Font(None, 50).render("Player: "+textInput, True, (255, 255, 255)), (40, 150))
             if invalidInput:window.blit(pygame.font.Font(None, 20).render("Please input either 1 or 2.", True, (255, 0, 0)), (42, 190))
         else:
-            window.blit(pygame.font.Font(None, 20).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {self.winDetection(self.state)} wins!" if __name__=="__main__" else "The player wins!" if self.winDetection(self.state)==humanPlayer else "The computer wins!") if self.winDetection(self.state)!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square." if humanPlayer!=0 else "", True, (255, 255, 255)), (25, 15))
+            temp=self.winDetection(self.state)
+            window.blit(pygame.font.Font(None, 20).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {temp} wins!" if __name__=="__main__" else "The player wins!" if temp==humanPlayer else "The computer wins!") if temp!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square." if humanPlayer!=0 else "", True, (255, 255, 255)), (25, 15))
             for i in range(2):
                 pygame.draw.rect(window, (255, 255, 255), (100*i+95, 50, 10, 300))
                 pygame.draw.rect(window, (255, 255, 255), (0, 100*i+145, 300, 10))
