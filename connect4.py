@@ -77,7 +77,7 @@ class Board:
         pygame.init()
         self.__init__()
         global screen, textInput, status, invalidInput
-        screen, textInput, status, invalidInput, humanPlayer=pygame.display.set_mode((700, 650)), "", "difficulty" if __name__!="__main__" else "playing", False, -1
+        screen, textInput, status, invalidInput, humanPlayer, clock, time=pygame.display.set_mode((700, 650)), "", "difficulty" if __name__!="__main__" else "playing", False, -1, pygame.time.Clock(), 0
         print()
         self.display(screen, humanPlayer)
         while True:
@@ -102,10 +102,17 @@ class Board:
             if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
                 if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
+                    clock.tick()
                     move=__main__.compute(self.difficulty if self.difficulty<6 or self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)
-                    print("\nComputer played:", move, "\n")
+                    clock.tick()
+                    temp=clock.get_time()/1000
+                    time+=temp
+                    print("\nComputer played:", move)
+                    #print("\nTime taken:", temp)
+                    print()
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
+                    #if __name__!="__main__" and self.winDetection(self.state)!=0:print("\nAverage time taken:", time/(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else self.turn//2+1), "\n")
             self.display(screen, humanPlayer)
 if __name__=="__main__":Board().play()
