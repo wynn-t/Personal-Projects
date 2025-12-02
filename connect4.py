@@ -37,7 +37,12 @@ class Board:
             for i in options:
                 temp, count=self.applyMove(state, turn, i), 0
                 for j in range(max(i-3, 0), min(i+4, 7)):
-                    if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:count+=1
+                    if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:
+                        temp2=self.applyMove(temp, turn+1, j)
+                        if temp2[j]==0 and self.winDetection(self.applyMove(temp2, turn, j))==turn%2+1:
+                            result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
+                            break
+                        count+=1
                     if count==2:
                         result[i]={"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]}
                         break
