@@ -118,6 +118,6 @@ class Board:
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
-                    #if __name__!="__main__" and (self.turn>=42 or self.winDetection(self.state)!=0):print("\nAverage time taken:", time/(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else self.turn//2+1), "\n")
+                    #if __name__!="__main__" and (self.turn>=42 or self.winDetection(self.state)!=0):print("\nAverage time taken:", time/(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else (self.turn+1)//2), "\n")
             self.display(screen, humanPlayer)
 if __name__=="__main__":Board().play()
