@@ -9,14 +9,15 @@ class Board:
         self.state=[0]*9
         self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
-    def enumerateMoves(self, state, turn, reasonable=True, *, evaluation=0):
+    def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
+        turn=len(state)-state.count(0)
         if evaluation!=0 or self.winDetection(state)!=0:return {}
         if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
         result={i:{"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]} for i in range(len(state)) if state[i]==0 and self.winDetection(temp:=self.applyMove(state, turn, i))==turn%2+1}
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
         if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
         return result
-    def randomMove(self, state, turn):return random.choice(list(self.enumerateMoves(state, turn, False)))
+    def randomMove(self, state):return random.choice(list(self.enumerateMoves(state, False)))
     def applyMove(self, state, turn, move):
         state=list(state)
         state[move]=turn%2+1
@@ -75,7 +76,7 @@ class Board:
                 if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     move=__main__.compute(self.state.count(0))
                     print("\nComputer played:", move, "\n")
-                if move in self.enumerateMoves(self.state, self.turn, False):
+                if move in self.enumerateMoves(self.state, False):
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
             self.display(screen, humanPlayer)
