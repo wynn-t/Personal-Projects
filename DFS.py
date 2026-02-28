@@ -16,8 +16,8 @@ def compute(depth):
     tree.update(temp)
     search(depth, tree)
     #print("\nCache:", cache)
-    #print("\nEval:", tree["eval"])
-    #print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ["state", "turn", "eval"]})
+    print("\nEval:", tree["eval"])
+    print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ["state", "turn", "eval"]})
     return random.choice([i for i in tree if i not in ["state", "turn", "eval"] if tree[i]["eval"]==tree["eval"]])
 def search(depth, node):
     mirror=tuple(reflect(node["state"], 7 if game.__name__=="connect4" else 3 if game.__name__=="tictactoe" else 1))

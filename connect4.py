@@ -113,11 +113,11 @@ class Board:
                     temp=clock.get_time()
                     time+=temp
                     print("\nComputer played:", move)
-                    #print("\nTime taken:", temp/1000)
+                    print("\nTime taken:", temp/1000)
                     print()
                 if move in self.enumerateMoves(self.state, self.turn, False):
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
-                    #if __name__!="__main__" and (self.turn>=42 or self.winDetection(self.state)!=0):print("\nAverage time taken:", time/(1000*(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else (self.turn+1)//2)), "\n")
+                    if __name__!="__main__" and (self.turn>=42 or self.winDetection(self.state)!=0):print("\nAverage time taken:", time/(1000*(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else (self.turn+1)//2)), "\n")
             self.display(screen, humanPlayer)
 if __name__=="__main__":Board().play()
