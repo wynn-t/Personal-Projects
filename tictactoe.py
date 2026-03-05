@@ -25,7 +25,7 @@ class Board:
     def winDetection(self, state):
         for i in list(range(4))+[6]:
             if (i<3 and row(state[i:i+7:3]) or i%3==0 and row(state[i:i+3]) or i==0 and row(state[i:i+9:4]) or i==2 and row(state[i:i+5:2])) and state[i]!=0:return state[i]
-        return 0
+        return 0 if 0 in state else -1
     def eval(self, branch, ownTurn):
         evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], [1, -1][branch["turn"]%2]
         if ownTurn:return [max, max, min][temp](evals)
@@ -37,7 +37,7 @@ class Board:
             if invalidInput:window.blit(pygame.font.Font(None, 20).render("Please input either 1 or 2.", True, (255, 0, 0)), (42, 190))
         else:
             temp=self.winDetection(self.state)
-            window.blit(pygame.font.Font(None, 20).render((f"{'Player' if humanPlayer!=0 else 'Computer'} {temp} wins!" if __name__=="__main__" else "The player wins!" if temp==humanPlayer else "The computer wins!") if temp!=0 else "It's a tie." if 0 not in self.state else "Click on a square to play in that square." if humanPlayer!=0 else "", True, (255, 255, 255)), (25, 15))
+            window.blit(pygame.font.Font(None, 20).render(("Click on a square to play in that square." if humanPlayer!=0 else "") if temp==0 else "It's a tie." if temp==-1 else f"{'Player' if humanPlayer!=0 else 'Computer'} {temp} wins!" if __name__=="__main__" else "The player wins!" if temp==humanPlayer else "The computer wins!", True, (255, 255, 255)), (25, 15))
             for i in range(2):
                 pygame.draw.rect(window, (255, 255, 255), (100*i+95, 50, 10, 300))
                 pygame.draw.rect(window, (255, 255, 255), (0, 100*i+145, 300, 10))
@@ -72,7 +72,7 @@ class Board:
                         if invalidInput:textInput=""
                         textInput+=pygame.key.name(event.key)
                         invalidInput=False
-            if status=="playing" and self.winDetection(self.state)==0 and 0 in self.state:
+            if status=="playing" and self.winDetection(self.state)==0:
                 if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     move=__main__.compute(self.state.count(0))
                     print("\nComputer played:", move, "\n")
