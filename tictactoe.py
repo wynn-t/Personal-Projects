@@ -6,30 +6,30 @@ def row(l):
     return True
 class Board:
     def __init__(self):
-        self.state=[0]*9
+        self.state=(0,)*9
         self.turn=len(self.state)-self.state.count(0)
-    def initTree(self):return {"state":self.state, "turn":self.turn, "eval":0}
+    def initTree(self):return {"state":self.state, "turn":self.turn, "eval":(0, 0)}
     def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
         turn=len(state)-state.count(0)
         if evaluation!=0 or self.winDetection(state)!=0:return {}
-        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
-        result={i:{"state":temp, "turn":turn+1, "eval":[0, 1, -1][turn%2+1]} for i in range(len(state)) if state[i]==0 and self.winDetection(temp:=self.applyMove(state, turn, i))==turn%2+1}
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":0} for i in range(len(state)) if state[i]==0}
+        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in range(len(state)) if state[i]==0}
+        result={i:{"state":temp, "turn":turn+1, "eval":(0, turn%2+1)} for i in range(len(state)) if state[i]==0 and self.winDetection(temp:=self.applyMove(state, turn, i))==turn%2+1}
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in range(len(state)) if state[i]==0 and self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1}
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in range(len(state)) if state[i]==0}
         return result
-    def randomMove(self, state):return random.choice(list(self.enumerateMoves(state, False)))
+    def randomMove(self, state):return random.choice(tuple(self.enumerateMoves(state, False)))
     def applyMove(self, state, turn, move):
         state=list(state)
         state[move]=turn%2+1
-        return state
+        return tuple(state)
     def winDetection(self, state):
         for i in list(range(4))+[6]:
             if (i<3 and row(state[i:i+7:3]) or i%3==0 and row(state[i:i+3]) or i==0 and row(state[i:i+9:4]) or i==2 and row(state[i:i+5:2])) and state[i]!=0:return state[i]
         return 0 if 0 in state else -1
     def eval(self, branch, ownTurn):
-        evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], [1, -1][branch["turn"]%2]
-        if ownTurn:return [max, max, min][temp](evals)
-        else:return temp if temp in evals else sum(evals)/len(evals)
+        evals, temp=tuple(branch[i]["eval"][0] for i in branch if i not in ("state", "turn", "eval")), tuple(branch[i]["eval"][1] for i in branch if i not in ("state", "turn", "eval"))
+        if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else ((max, min)[branch["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
+        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="player":
