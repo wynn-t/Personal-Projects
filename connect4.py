@@ -77,7 +77,7 @@ class Board:
             if __name__!="__main__" and humanPlayer!=0:
                 window.blit(pygame.font.Font(None, 30).render("You are:", True, (255, 255, 255)), (500, 25))
                 pygame.draw.circle(window, (255, 255 if humanPlayer==1 else 0, 0), (610, 35), 20)
-            for i in range(len(self.state)):pygame.draw.circle(window, (127, 127, 127) if self.state[i]==0 else (255, 255 if self.state[i]==1 else 0, 0), (i%7*100+50, i//7*100+100), 35)
+            for i in range(len(self.state)):pygame.draw.circle(window, (127, 127, 127) if self.state[i]==0 else (255, 255 if self.state[i]==1 else 0, 0), ((i%self.columns*2+1)*350/self.columns, (i//self.columns*2+1)*300/self.rows+50), 37.5*min(7/self.columns, 6/self.rows))
         pygame.display.update()
     def play(self):
         pygame.init()
@@ -92,7 +92,7 @@ class Board:
                 if event.type==QUIT or event.type==KEYUP and event.key==K_ESCAPE:
                     pygame.quit()
                     return
-                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and 15<=event.pos[0]%100<=85 and event.pos[1]>=50:move=event.pos[0]//100
+                elif event.type==MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and status=="playing" and (__name__=="__main__" or self.turn%2+1==humanPlayer) and abs(event.pos[0]%(700/self.columns)-350/self.columns)<=30*min(7/self.columns, 6/self.rows) and event.pos[1]>=50:move=event.pos[0]*self.columns//700
                 elif event.type==KEYDOWN:
                     if event.key==K_RETURN:
                         if textInput=="" or status=="difficulty" and int(textInput) not in range(11) or status=="player" and int(textInput) not in range(3):invalidInput=True
@@ -109,7 +109,7 @@ class Board:
                 if __name__!="__main__" and self.turn%2+1!=humanPlayer:
                     slots=self.state[:7].count(0)
                     clock.tick()
-                    move=__main__.compute(self.difficulty if self.difficulty<6 or self.turn<15 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)
+                    move=__main__.compute(self.difficulty if self.difficulty<6 or self.turn<15 or self.rows!=6 or self.columns!=7 or self.connect!=4 else self.difficulty+1 if self.turn<25 else self.difficulty+3 if slots>5 else self.difficulty+6 if slots==5 else 17)
                     clock.tick()
                     temp=clock.get_time()
                     time+=temp
