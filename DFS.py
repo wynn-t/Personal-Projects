@@ -1,6 +1,6 @@
 import random
 import connect4 as game
-#import tictactoe as game
+import tictactoe as game
 board=game.Board()
 def reflect(l, columns):
     result=[]
@@ -21,7 +21,7 @@ def compute(depth):
     print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ("state", "turn", "eval")})
     return random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"][0]==tree["eval"][0]-1 and tree[i]["eval"][1]==tree["eval"][1])) if tree["eval"][1]==tree["turn"]%2+1 else random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"]==tree["eval"]))
 def search(depth, node):
-    mirror=reflect(node["state"], 7 if game.__name__=="connect4" else 3 if game.__name__=="tictactoe" else 1)
+    mirror=reflect(node["state"], board.columns if game.__name__=="connect4" else 3 if game.__name__=="tictactoe" else 1)
     if mirror in cache:return cache[mirror]
     state=node["state"]
     if state not in cache:
