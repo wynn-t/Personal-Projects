@@ -5,17 +5,17 @@ def connect(l):
         if i!=l[0]:return False
     return True
 class Board:
-    def __init__(self):
-        self.state=(0,)*42
-        self.turn=len(self.state)-self.state.count(0)
+    def __init__(self, *, rows=6, columns=7, connect=4):
+        self.state=(0,)*rows*columns
+        self.turn, self.rows, self.columns, self.connect=len(self.state)-self.state.count(0), rows, columns, connect
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":(0, 0)}
     def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
         turn=len(state)-state.count(0)
         if evaluation!=0 or self.winDetection(state)!=0:return {}
-        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in range(7) if state[i]==0}
-        if turn==0:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":(40, 1)}}
-        result, options={}, list(range(7))
-        for i in range(7):
+        if not reasonable:return {i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in range(self.columns) if state[i]==0}
+        if turn==0 and self.rows==6 and self.columns==7 and self.connect==4:return {3:{"state":self.applyMove(state, 0, 3), "turn":1, "eval":(40, 1)}}
+        result, options={}, list(range(self.columns))
+        for i in range(self.columns):
             if state[i]!=0:
                 options.remove(i)
                 continue
@@ -30,14 +30,14 @@ class Board:
                     result[i]={"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)}
                     break
         if len(result)==0:
-            for i in list(options):
+            for i in tuple(options):
                 temp=self.applyMove(state, turn, i)
                 if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))==(turn+1)%2+1:
                     options.remove(i)
                     continue
             for i in options:
                 temp, count=self.applyMove(state, turn, i), 0
-                for j in range(max(i-3, 0), min(i+4, 7)):
+                for j in range(max(i-self.connect+1, 0), min(i+self.connect, self.columns)):
                     if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:
                         temp2=self.applyMove(temp, turn+1, j)
                         if temp2[j]==0 and self.winDetection(self.applyMove(temp2, turn, j))==turn%2+1:
@@ -48,24 +48,21 @@ class Board:
                         result[i]={"state":temp, "turn":turn+1, "eval":(1, turn%2+1)}
                         break
                 if len(result)>0:break
-        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in (options if len(options)>0 else range(7)) if state[i]==0}
+        if len(result)==0:result={i:{"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)} for i in (options if len(options)>0 else range(self.columns)) if state[i]==0}
         return result
     def randomMove(self, state):return random.choice(tuple(self.enumerateMoves(state, False)))
     def applyMove(self, state, turn, move):
         state=list(state)
-        state[max(i for i in range(move, len(state), 7) if state[i]==0)]=turn%2+1
+        state[max(i for i in range(move, len(state), self.columns) if state[i]==0)]=turn%2+1
         return tuple(state)
     def winDetection(self, state):
         for i in range(len(state)-3):
-            if (i<21 and connect(state[i:i+22:7]) or i%7<4 and connect(state[i:i+4]) or i<18 and i%7<4 and connect(state[i:i+25:8]) or i<21 and i%7>2 and connect(state[i:i+19:6])) and state[i]!=0:return state[i]
+            if (i<self.columns*(self.rows-self.connect+1) and connect(state[i:i+self.columns*self.connect:self.columns]) or i%self.columns<=self.columns-self.connect and connect(state[i:i+self.connect]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns<=self.columns-self.connect and connect(state[i:i+(self.columns+1)*self.connect:self.columns+1]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns>=self.connect-1 and connect(state[i:i+(self.columns-1)*self.connect:self.columns-1])) and state[i]!=0:return state[i]
         return 0 if 0 in state else -1
     def eval(self, branch, ownTurn):
         evals, temp=tuple(branch[i]["eval"][0] for i in branch if i not in ("state", "turn", "eval")), tuple(branch[i]["eval"][1] for i in branch if i not in ("state", "turn", "eval"))
         if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else ((max, min)[branch["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
         else:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
-        evals, temp=[branch[i]["eval"] for i in branch if i not in ["state", "turn", "eval"]], [1, -1][branch["turn"]%2]
-        if ownTurn:return [max, max, min][temp](evals)
-        else:return temp if temp in evals else sum(evals)/len(evals)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":

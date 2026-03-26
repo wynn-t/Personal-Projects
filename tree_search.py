@@ -17,5 +17,5 @@ def compute(depth):
     #print("\nTree:", tree)
     print("\nEval:", tree["eval"])
     print("\nBranch evals:", {i:tree[i]["eval"] for i in tree if i not in ("state", "turn", "eval")})
-    return random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"][0]==tree["eval"][0]-1)) if tree["eval"][1]==tree["turn"]%2+1 else random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"]==tree["eval"]))
+    return random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"][0]==tree["eval"][0]-1 and tree[i]["eval"][1]==tree["eval"][1])) if tree["eval"][1]==tree["turn"]%2+1 else random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]["eval"]==tree["eval"]))
 board.play()
