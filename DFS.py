@@ -1,6 +1,6 @@
 import random
 import connect4 as game
-import tictactoe as game
+#import tictactoe as game
 board=game.Board()
 def reflect(l, columns):
     result=[]
