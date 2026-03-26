@@ -6,8 +6,10 @@ def connect(l):
     return True
 class Board:
     def __init__(self, *, rows=6, columns=7, connect=4):
-        self.state=(0,)*rows*columns
-        self.turn, self.rows, self.columns, self.connect=len(self.state)-self.state.count(0), rows, columns, connect
+        self.rows, self.columns, self.connect=rows, columns, connect
+        self.initBoard()
+        self.turn=len(self.state)-self.state.count(0)
+    def initBoard(self):self.state=(0,)*self.rows*self.columns
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":(0, 0)}
     def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
         turn=len(state)-state.count(0)
@@ -81,7 +83,7 @@ class Board:
         pygame.display.update()
     def play(self):
         pygame.init()
-        self.__init__()
+        self.initBoard()
         global screen, textInput, status, invalidInput
         screen, textInput, status, invalidInput, humanPlayer, clock, time=pygame.display.set_mode((700, 650)), "", "difficulty" if __name__!="__main__" else "playing", False, -1, pygame.time.Clock(), 0
         print()
