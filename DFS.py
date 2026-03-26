@@ -23,7 +23,7 @@ def compute(depth):
 def search(depth, node):
     mirror=reflect(node["state"], board.columns if game.__name__=="connect4" else 3 if game.__name__=="tictactoe" else 1)
     if mirror in cache:return cache[mirror]
-    state=node["state"]
+    state=tuple(node["state"])
     if state not in cache:
         if depth!=initDepth:node.update(board.enumerateMoves(node["state"], evaluation=node["eval"][0]))
         if depth>1:
