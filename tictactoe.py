@@ -29,7 +29,7 @@ class Board:
     def eval(self, node, ownTurn):
         evals, temp=tuple(node[i][0] for i in node if i not in ("state", "turn", "eval")), tuple(node[i][1] for i in node if i not in ("state", "turn", "eval"))
         if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else ((max, min)[node["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
-        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
+        return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="player":

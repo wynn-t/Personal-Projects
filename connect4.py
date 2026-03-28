@@ -23,26 +23,26 @@ class Board:
                 continue
         for i in options:
             temp=self.applyMove(state, turn, i)
-            if self.winDetection(temp)==turn%2+1:
+            if self.winDetection(temp, i)==turn%2+1:
                 result[i]={"state":temp, "turn":turn+1, "eval":(0, turn%2+1)}
                 break
         if len(result)==0:
             for i in options:
-                if self.winDetection(self.applyMove(state, turn+1, i))==(turn+1)%2+1:
+                if self.winDetection(self.applyMove(state, turn+1, i), i)==(turn+1)%2+1:
                     result[i]={"state":self.applyMove(state, turn, i), "turn":turn+1, "eval":(0, 0)}
                     break
         if len(result)==0:
             for i in tuple(options):
                 temp=self.applyMove(state, turn, i)
-                if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i))==(turn+1)%2+1:
+                if temp[i]==0 and self.winDetection(self.applyMove(temp, turn+1, i), i)==(turn+1)%2+1:
                     options.remove(i)
                     continue
             for i in options:
                 temp, count=self.applyMove(state, turn, i), 0
                 for j in range(max(i-self.connect+1, 0), min(i+self.connect, self.columns)):
-                    if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j))==turn%2+1:
+                    if temp[j]==0 and self.winDetection(self.applyMove(temp, turn, j), j)==turn%2+1:
                         temp2=self.applyMove(temp, turn+1, j)
-                        if temp2[j]==0 and self.winDetection(self.applyMove(temp2, turn, j))==turn%2+1:
+                        if temp2[j]==0 and self.winDetection(self.applyMove(temp2, turn, j), j)==turn%2+1:
                             result[i]={"state":temp, "turn":turn+1, "eval":(1, turn%2+1)}
                             break
                         count+=1
@@ -57,14 +57,24 @@ class Board:
         state=list(state)
         state[max(i for i in range(move, len(state), self.columns) if state[i]==0)]=turn%2+1
         return state
-    def winDetection(self, state):
-        for i in range(len(state)-3):
-            if (i<self.columns*(self.rows-self.connect+1) and connect(state[i:i+self.columns*self.connect:self.columns]) or i%self.columns<=self.columns-self.connect and connect(state[i:i+self.connect]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns<=self.columns-self.connect and connect(state[i:i+(self.columns+1)*self.connect:self.columns+1]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns>=self.connect-1 and connect(state[i:i+(self.columns-1)*self.connect:self.columns-1])) and state[i]!=0:return state[i]
+    def winDetection(self, state, lastPlayed=-1):
+        if lastPlayed==-1:
+            for i in range(len(state)-3):
+                if (i<self.columns*(self.rows-self.connect+1) and connect(state[i:i+self.columns*self.connect:self.columns]) or i%self.columns<=self.columns-self.connect and connect(state[i:i+self.connect]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns<=self.columns-self.connect and connect(state[i:i+(self.columns+1)*self.connect:self.columns+1]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns>=self.connect-1 and connect(state[i:i+(self.columns-1)*self.connect:self.columns-1])) and state[i]!=0:return state[i]
+            return 0 if 0 in state else -1
+        position=min(i for i in range(lastPlayed, len(state), self.columns) if state[i]!=0)
+        if position<self.columns*(self.rows-self.connect+1) and connect(state[position:position+self.columns*self.connect:self.columns]):return state[position]
+        for i in range(max(position-self.connect+1, position//self.columns*self.columns), min(position, (position//self.columns+1)*self.columns-self.connect)+1):
+            if connect(state[i:i+self.connect]):return state[position]
+        for i in range(position-(self.columns+1)*(self.connect-1), position+1, self.columns+1):
+            if 0<=i<len(state) and i<self.columns*(self.rows-self.connect+1) and i%self.columns<=self.columns-self.connect and connect(state[i:i+(self.columns+1)*self.connect:self.columns+1]):return state[position]
+        for i in range(position-(self.columns-1)*(self.connect-1), position+1, self.columns-1):
+            if 0<=i<len(state) and i<self.columns*(self.rows-self.connect+1) and i%self.columns>=self.connect-1 and connect(state[i:i+(self.columns-1)*self.connect:self.columns-1]):return state[position]
         return 0 if 0 in state else -1
     def eval(self, node, ownTurn):
         evals, temp=tuple(node[i][0] for i in node if i not in ("state", "turn", "eval")), tuple(node[i][1] for i in node if i not in ("state", "turn", "eval"))
         if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else ((max, min)[node["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
-        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
+        return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":
@@ -121,6 +131,6 @@ class Board:
                 if move in self.enumerateMoves(self.state, False):
                     self.state=self.applyMove(self.state, self.turn, move)
                     self.turn+=1
-                    if __name__!="__main__" and self.winDetection(self.state)!=0:print("\nAverage time taken:", time/(1000*(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else (self.turn+1)//2)), "\n")
+                    if __name__!="__main__" and self.winDetection(self.state, move)!=0:print("\nAverage time taken:", time/(1000*(self.turn if humanPlayer==0 else self.turn//2 if humanPlayer==1 else (self.turn+1)//2)), "\n")
             self.display(screen, humanPlayer)
 if __name__=="__main__":Board().play()
