@@ -6,7 +6,7 @@ def row(l):
     return True
 class Board:
     def __init__(self):
-        self.state=(0,)*9
+        self.state=[0]*9
         self.turn=len(self.state)-self.state.count(0)
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":(0, 0)}
     def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
@@ -21,15 +21,15 @@ class Board:
     def applyMove(self, state, turn, move):
         state=list(state)
         state[move]=turn%2+1
-        return tuple(state)
+        return state
     def winDetection(self, state):
         for i in list(range(4))+[6]:
             if (i<3 and row(state[i:i+7:3]) or i%3==0 and row(state[i:i+3]) or i==0 and row(state[i:i+9:4]) or i==2 and row(state[i:i+5:2])) and state[i]!=0:return state[i]
         return 0 if 0 in state else -1
-    def eval(self, branch, ownTurn):
-        evals, temp=tuple(branch[i]["eval"][0] for i in branch if i not in ("state", "turn", "eval")), tuple(branch[i]["eval"][1] for i in branch if i not in ("state", "turn", "eval"))
-        if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else ((max, min)[branch["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
-        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
+    def eval(self, node, ownTurn):
+        evals, temp=tuple(node[i][0] for i in node if i not in ("state", "turn", "eval")), tuple(node[i][1] for i in node if i not in ("state", "turn", "eval"))
+        if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else ((max, min)[node["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
+        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="player":

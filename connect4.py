@@ -9,7 +9,7 @@ class Board:
         self.rows, self.columns, self.connect=rows, columns, connect
         self.initBoard()
         self.turn=len(self.state)-self.state.count(0)
-    def initBoard(self):self.state=(0,)*self.rows*self.columns
+    def initBoard(self):self.state=[0]*self.rows*self.columns
     def initTree(self):return {"state":self.state, "turn":self.turn, "eval":(0, 0)}
     def enumerateMoves(self, state, reasonable=True, *, evaluation=0):
         turn=len(state)-state.count(0)
@@ -56,15 +56,15 @@ class Board:
     def applyMove(self, state, turn, move):
         state=list(state)
         state[max(i for i in range(move, len(state), self.columns) if state[i]==0)]=turn%2+1
-        return tuple(state)
+        return state
     def winDetection(self, state):
         for i in range(len(state)-3):
             if (i<self.columns*(self.rows-self.connect+1) and connect(state[i:i+self.columns*self.connect:self.columns]) or i%self.columns<=self.columns-self.connect and connect(state[i:i+self.connect]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns<=self.columns-self.connect and connect(state[i:i+(self.columns+1)*self.connect:self.columns+1]) or i<self.columns*(self.rows-self.connect+1) and i%self.columns>=self.connect-1 and connect(state[i:i+(self.columns-1)*self.connect:self.columns-1])) and state[i]!=0:return state[i]
         return 0 if 0 in state else -1
-    def eval(self, branch, ownTurn):
-        evals, temp=tuple(branch[i]["eval"][0] for i in branch if i not in ("state", "turn", "eval")), tuple(branch[i]["eval"][1] for i in branch if i not in ("state", "turn", "eval"))
-        if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else ((max, min)[branch["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
-        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==branch["turn"]%2+1))+1, branch["turn"]%2+1) if branch["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (branch["turn"]+1)%2+1)
+    def eval(self, node, ownTurn):
+        evals, temp=tuple(node[i][0] for i in node if i not in ("state", "turn", "eval")), tuple(node[i][1] for i in node if i not in ("state", "turn", "eval"))
+        if ownTurn:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else ((max, min)[node["turn"]%2](evals[i] for i in range(len(evals)) if temp[i]==0), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
+        else:return (min((evals[i] for i in range(len(evals)) if temp[i]==node["turn"]%2+1))+1, node["turn"]%2+1) if node["turn"]%2+1 in temp else (sum((0, 1, -1)[temp[i]] if temp[i]!=0 else evals[i] for i in range(len(evals)))/len(evals), 0) if 0 in temp else (max(evals), (node["turn"]+1)%2+1)
     def display(self, window, humanPlayer=1):
         window.fill((0, 0, 0))
         if status=="difficulty":
