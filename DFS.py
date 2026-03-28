@@ -24,12 +24,16 @@ def search(depth, node):
     if game.__name__ in ("connect4", "tictactoe"):
         mirror=tuple(reflect(node["state"], board.columns if game.__name__=="connect4" else 3 if game.__name__=="tictactoe" else 1))
         if mirror in cache:return cache[mirror]
-    state=tuple(node["state"])
+    state, flag=tuple(node["state"]), False
     if state not in cache:
         if depth!=initDepth:node.update(board.enumerateMoves(node["state"], evaluation=node["eval"][0]))
         if depth>1:
             for i in node:
-                if i not in ("state", "turn", "eval"):node[i]=search(depth-1, node[i])
+                if i not in ("state", "turn", "eval"):
+                    if flag:node[i]=node[i]["eval"]
+                    else:
+                        node[i]=search(depth-1, node[i])
+                        #if node[i][1]==node["turn"]%2+1:flag=True
         else:
             for i in node:
                 if i not in ("state", "turn", "eval"):node[i]=node[i]["eval"]
