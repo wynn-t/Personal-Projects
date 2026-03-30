@@ -4,10 +4,10 @@ import connect4 as game
 board=game.Board()
 def compute(depth):
     tree=board.initTree()
-    if depth<1:return board.randomMove(tree["state"], tree["turn"])
+    if depth<1:return board.randomMove(tree["state"])
     branches=(tree,)
     for i in range(depth):
-        for j in branches:j.update(board.enumerateMoves(j["state"], j["turn"], evaluation=j["eval"][0]))
+        for j in branches:j.update(board.enumerateMoves(j["state"], reasonable=True, evaluation=j["eval"][0]))
         branches=tuple(j[k] for j in branches for k in j if k not in ("state", "turn", "eval"))
     for i in range(depth-1, -1, -1):
         branches=(tree,)
