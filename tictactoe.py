@@ -1,9 +1,6 @@
 import __main__, random, pygame
 from pygame.locals import *
-def row(l):
-    for i in l:
-        if i!=l[0]:return False
-    return True
+def row(l):return l==[l[0]]*len(l)
 class Board:
     def __init__(self):
         self.state=[0]*9
