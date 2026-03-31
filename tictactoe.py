@@ -1,6 +1,5 @@
 import __main__, random, pygame
 from pygame.locals import *
-def row(l):return l==[l[0]]*len(l)
 class Board:
     def __init__(self):
         self.state=[0]*9
@@ -20,6 +19,7 @@ class Board:
         state[move]=turn%2+1
         return state
     def winDetection(self, state):
+        def row(l):return l==[l[0]]*len(l)
         for i in list(range(4))+[6]:
             if (i<3 and row(state[i:i+7:3]) or i%3==0 and row(state[i:i+3]) or i==0 and row(state[i:i+9:4]) or i==2 and row(state[i:i+5:2])) and state[i]!=0:return state[i]
         return 0 if 0 in state else -1
