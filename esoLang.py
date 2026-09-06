@@ -47,7 +47,7 @@ class Brainfk(EsoLang):
     def loopStart(self):
         end=self.code[self.pntr+1:].find("]")
         if end<0:raise SyntaxError("unmatched '['")
-        if self.memory[self.dpntr]==0 or self.loopMode and self.memory[self.dpntr]<0:
+        if self.memory[self.dpntr]==0 or not self.loopStrict and self.memory[self.dpntr]<0:
             end+=self.pntr+1
             layer=self.code[self.pntr+1:end].count("[")
             while layer>0:
@@ -59,7 +59,7 @@ class Brainfk(EsoLang):
     def loopEnd(self):
         start=self.code[:self.pntr].rfind("[")
         if start<0:raise SyntaxError("unmatched ']'")
-        if self.memory[self.dpntr]>0 or self.loopMode and self.memory[self.dpntr]<0:
+        if self.memory[self.dpntr]>0 or self.loopStrict and self.memory[self.dpntr]<0:
             layer=self.code[start:self.pntr-1].count("]")
             while layer>0:
                 check=self.code[:start].rfind("[")
@@ -69,7 +69,7 @@ class Brainfk(EsoLang):
             self.pntr=start
     def __init__(self, loopStrict=False):
         super().__init__("Brainf**k", [">", "<", "+", "-", ".", ",", "[", "]"], [self.dpntrRight, self.dpntrLeft, self.dpntrInc, self.dpntrDec, self.ouput, self.input, self.loopStart, self.loopEnd], ["dpntr", "memory"], ["0", "[0]"])
-        self.loopMode=loopStrict
+        self.loopStrict=loopStrict
     def run(self, code, textMode=False, showMem=False, showInternal=False):
         self.textMode=textMode
         super().run(code, showInternal)
@@ -80,20 +80,26 @@ brainfk=Brainfk()
 # Addition program
 #brainfk.run(",<,[->+<]>.")
 
+# Absolute difference program
+#brainfk.run("+<<,<,>[[-<]>>]>[-<<+>>]<<.")
+
 # Multiplication program
 #brainfk.run(",<,[->[->+>+<<]>[-<+>]<<]>>>.")
 
 # Exponential program (a^b)
 #brainfk.run("+<,<,[->[->[->>+>+<<<]>+>[-<<+>>]<<<]>[-]>>>[-<<<+>>>]<<[-<<+>>]<<<]>>.")
 
+# Factorial program
+#brainfk.run("+<<,[[->+>[->+>+<<]>[-<+>]<<<]>>[-]>>[-<<+>>]<<<[-<+>]<-]>>.")
+
 # Hello world program
-brainfk.run("++++++++[->+++++++++<]>.<++++++[->+++++<]>-.+++++++..+++.<++++++[-<+++++++<+++++>>]<++.<++.>[->++<]>-.>.+++.------.--------.<<<+.", True, True)
+#brainfk.run("++++++++[->+++++++++<]>.<++++++[->+++++<]>-.+++++++..+++.<++++++[-<+++++++<+++++>>]<++.<++.>[->++<]>-.>.+++.------.--------.<<<+.", True, True)
 
 # Base 2 pentation (2^^^3 = 2^^4 = 2^16 = 65536)
 #brainfk.run("+<+<+<+++[->[->[->[->+<]>[-<++>]<<]>[-<+>]+<<]>[-<+>]+<<]>.", False, True)
 
 # Duplicating number A, B times
-brainfk.run(",>,[[>]+[<]>[<+[>]<+[<]>>-]<[->+<]>>-]<[-]>>[-.>]", False, True)
+#brainfk.run(",>,[[>]+[<]>[<+[>]<+[<]>>-]<[->+<]>>-]<[-]>>[-.>]", False, True)
 
 # Triangular numbers ((n^2+n)/2)
 #brainfk.run(",[->+>+<<]>[->[->+>+<<]>[-<+>]<<]>[->>+<<]>>[--<+>]<.", False, True)
@@ -101,7 +107,7 @@ brainfk.run(",>,[[>]+[<]>[<+[>]<+[<]>>-]<[->+<]>>-]<[-]>>[-.>]", False, True)
 # Ackermann function (m, n)
 brainfk.run("->,>,<+[->>>>-<<<<[>>]>>+[-<[-<+>]<+>>>]+>+[[-<<<<<->>>>>]<<<<<[+>>]>[-<+>]<++++>]<[->]>[<<---<<--[++>>]>[-<++>]<++++>]>[-<+<---<[>]++<->>[-]>+>]<[-<<<[>]>-[-<<-<[->+<]<[->+>>+<<<]->>>[-<<<+>>>]]]>>[-]>[-]<<<<[>]<[->>>]<<<<+]>.", False, True)
 
-# Quine (only works when loops are non-restrictive)
-brainfk.run("-->+++>+>+>+>+++++>++>++>->+++>++>+>>>>>>>>>>>>>>>>->++++>>>>->+++>+++>+++>+++>+++>+++>+>+>>>->->>++++>+>>>>->>++++>+>+>>->->++>++>++>++++>+>++>->++>++++>+>+>++>++>->->++>++>++++>+>+>>>>>->>->>++++>++>++>++++>>>>>->>>>>+++>->++++>->->->+++>>>+>+>+++>+>++++>>+++>->>>>>->>>++++>++>++>+>+++>->++++>>->->+++>+>+++>+>++++>>>+++>->++++>>->->++>++++>++>++++>>++[-[->>+[>]++[<]<]>>+[>]<--[++>++++>]+[<]<<++]>>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+++++++++++++++<-]>--.<<<]", True)
+# Quine (only works when loops are non-strict, not made by me)
+#brainfk.run("-->+++>+>+>+>+++++>++>++>->+++>++>+>>>>>>>>>>>>>>>>->++++>>>>->+++>+++>+++>+++>+++>+++>+>+>>>->->>++++>+>>>>->>++++>+>+>>->->++>++>++>++++>+>++>->++>++++>+>+>++>++>->->++>++>++++>+>+>>>>>->>->>++++>++>++>++++>>>>>->>>>>+++>->++++>->->->+++>>>+>+>+++>+>++++>>+++>->>>>>->>>++++>++>++>+>+++>->++++>>->->+++>+>+++>+>++++>>>+++>->++++>>->->++>++++>++>++++>>++[-[->>+[>]++[<]<]>>+[>]<--[++>++++>]+[<]<<++]>>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+++++++++++++++<-]>--.<<<]", True)
 
 brainfk.codeInput(False, True)

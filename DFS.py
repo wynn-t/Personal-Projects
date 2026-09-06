@@ -35,6 +35,7 @@ def compute(depth):
     tree.update(temp)
     search(depth, tree)
     #print("\nCache:", cache)
+    del cache
     print("\nEval:", tree["eval"])
     print("\nMove evals:", {i:tree[i] for i in tree if i not in ("state", "turn", "eval")})
     return random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i][0]==tree["eval"][0]-1 and tree[i][1]==tree["eval"][1])) if tree["eval"][1]==tree["turn"]%2+1 else random.choice(tuple(i for i in tree if i not in ("state", "turn", "eval") if tree[i]==tree["eval"]))
