@@ -44,7 +44,7 @@ class Brainfk(EsoLang):
         else:
             try:self.memory[self.dpntr]=int(input("\nInput an integer: "))
             except ValueError:raise ValueError("invalid input")
-    def loopStart(self):
+    def loopStart(self): # To do: switch to a stack-based mechanism (optimization)
         end=self.code[self.pntr+1:].find("]")
         if end<0:raise SyntaxError("unmatched '['")
         if self.memory[self.dpntr]==0 or not self.loopStrict and self.memory[self.dpntr]<0:
